@@ -30,7 +30,7 @@ I have python 2.7, 3, 3.5, and 3.7 on my Mac. I had to install theses libraries 
 In the end I needed to run using Miniconda3.
 
 
-##Sources
+## Sources
 DEMO: https://www.tensorflow.org/tutorials/keras/basic_classification
 DEMO: https://www.kaggle.com/ievgenvp/keras-flow-from-directory-on-python/notebook
 KERAS API: https://keras.io

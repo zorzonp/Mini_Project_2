@@ -14,7 +14,7 @@ data/
 		class_a/
 		class_b/
 
-The images I am using to train and test my modle are the Dog Vs. Cat dataset from Kaggle:
+The images I am using to train and test my modle are the Dog Vs. Cat dataset from Kaggle:https://www.kaggle.com/c/dogs-vs-cats-redux-kernels-edition/data
 
 I utlized demos to read in images and to aid in building the modles. See the Sources section for the demo's I used.
 

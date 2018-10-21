@@ -18,6 +18,7 @@ The images I am using to train and test my modle are the Dog Vs. Cat dataset fro
 
 I utlized demos to read in images and to aid in building the modles. See the Sources section for the demo's I used.
 
+## Project Features
 For this Project I created 3 models that the user can choose from. If running using the API just call the function for the model you want. 
 If runninng using the supplied main.py file it will query the user to see what modle to use. It will also ask what optmizer you want to use and how many epochs to use. Using around 10 epochs is best but takes a really long time. Also when using the main.py file the resize for the image is 28x28. If using the API you can choose the size, however the bigger the image the slower it takes to train the model. 
 

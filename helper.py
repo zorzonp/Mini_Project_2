@@ -130,7 +130,7 @@ def getModelTwo(image_size):
 	model.add(Dropout(0.2))
 	model.add(Dense(2, activation = 'softmax'))
 	model.add(Dense(128, activation = 'relu'))
-
+	model.add(Dropout(0.2))
 	#must be last or else does not work
 	model.add(Dense(1, activation = 'sigmoid'))
 

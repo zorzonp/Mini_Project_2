@@ -32,5 +32,7 @@ In the end I needed to run using Miniconda3.
 
 ## Sources
 DEMO: https://www.tensorflow.org/tutorials/keras/basic_classification
+
 DEMO: https://www.kaggle.com/ievgenvp/keras-flow-from-directory-on-python/notebook
+
 KERAS API: https://keras.io

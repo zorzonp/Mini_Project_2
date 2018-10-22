@@ -14,6 +14,8 @@
 
 #import my API
 import helper
+
+#Import other libraries
 import numpy as np
 import pandas as pd
 import os, os.path
@@ -22,8 +24,6 @@ import matplotlib.pyplot as plt
 #global Variables 
 batch_size = 0
 num_files_train = 0
-num_files_test = 0
-num_files_val = 0
 
 batch_size = 9000
 
@@ -54,8 +54,6 @@ print("num_files_train: ", num_files_train)
 print("num_batchs: ", num_batch)
 
 
-steps = 2295*1.4/batch_size
-
 #get the test and train data from the images in 'data/'
 train_data = helper.getTrainData(path, image_size, color_mode, batch_size, mode)
 test_data, test_files_names = helper.getTestData(path, image_size, color_mode, batch_size, mode)
@@ -80,12 +78,6 @@ print("Fit Model")
 while i < num_batch:
 	train_set_images, train_set_labels = helper.getTestSet(train_data)
 
-	#get a set in the proper format:
-	num_val_samples = len(test_data)
-	num_train_samples = len(train_data)
-	test_steps = num_val_samples/batch_size
-
-
 	model = helper.compile(model, optimizer = opt)
 
 	#fit the data in the modle
@@ -102,48 +94,48 @@ loss, accuracy = helper.evalModel(model, test_set_images, test_set_labels)
 #print data on how well the model did
 print('Test accuracy: ', accuracy)
 print('Test loss: ', loss)
-
 helper.printSummary(model_num, opt, num_epoch)
 
-
+#Do a prediction
 print("Predict")
 predictions = model.predict_classes(test_set_images)
 print(predictions)
 print(test_set_labels)
 
+#get the first occurance of a CAT
 lbl_index = 0
 for label in test_set_labels:
 	if label == 1:
 		break
 	lbl_index = lbl_index + 1
 
+#print the predicted class as text
 tmp_index = int(predictions[lbl_index])
 print("Class predict: ", classes[tmp_index])
+
+#if the class predicted matched the label then print pass, else print fail
 if(predictions[lbl_index] == test_set_labels[lbl_index]):
 	print("PASS!")
 else:
 	print("FAIL comparison!!")
-# plt.figure()
-# plt.imshow(test_set_images[lbl_index])
-# plt.grid(False)
-# plt.show()
 
+#get the first occurance of a DOG
 lbl_index = 0
 for label in test_set_labels:
 	if label == 0:
 		break
 	lbl_index = lbl_index + 1
 
+#print the predicted class as text
 tmp_index = int(predictions[lbl_index])
 print("Class predict:", classes[tmp_index])
+
+#if the class predicted matched the label then print pass, else print fail
 if(predictions[lbl_index] == test_set_labels[lbl_index]):
 	print("PASS!")
 else:
 	print("FAIL comparison!!")
-# plt.figure()
-# plt.imshow(test_set_images[lbl_index])
-# plt.grid(False)
-# plt.show()
+
 
 
 

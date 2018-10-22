@@ -38,22 +38,27 @@ import numpy as np
 ##
 def getTrainData(path, image_size, color, batch, mode):
 
-	# data generator for training set needed for keras to read the images
-	train_datagen = ImageDataGenerator(
-		rescale = 1./255,
-		shear_range = 0.2, 
-		zoom_range = 0.2,
-		horizontal_flip = True) 
+	try:
+		# data generator for training set needed for keras to read the images
+		train_datagen = ImageDataGenerator(
+			rescale = 1./255,
+			shear_range = 0.2, 
+			zoom_range = 0.2,
+			horizontal_flip = True) 
 
-	# generator for reading train data from folder
-	train_generator = train_datagen.flow_from_directory(
-		path+'/train',
-		target_size = (image_size, image_size),
-		color_mode = color,
-		batch_size = batch,
-		class_mode = mode)
+		# generator for reading train data from folder
+		train_generator = train_datagen.flow_from_directory(
+			path+'/train',
+			target_size = (image_size, image_size),
+			color_mode = color,
+			batch_size = batch,
+			class_mode = mode)
 
-	return train_generator
+		return train_generator
+	except Exception as e:
+		print("getTrainData failed with exception: ", e)
+		print("Terminating now, Sorry.")
+		exit()
 
 ## getTestData
 ##
@@ -72,35 +77,45 @@ def getTrainData(path, image_size, color, batch, mode):
 ## 		validation_generator: the traning data for the modle
 ##
 def getTestData(path, image_size, color, batch, mode):
-	test_datagen = ImageDataGenerator(rescale = 1./255)
+	try:
+		test_datagen = ImageDataGenerator(rescale = 1./255)
 
-	validation_generator = test_datagen.flow_from_directory(
-		path+'/valid',
-		target_size = (image_size, image_size),
-		color_mode = color,
-		batch_size = batch,
-		class_mode = mode)
+		validation_generator = test_datagen.flow_from_directory(
+			path+'/valid',
+			target_size = (image_size, image_size),
+			color_mode = color,
+			batch_size = batch,
+			class_mode = mode)
 
-	test_files_names = validation_generator.filenames
+		test_files_names = validation_generator.filenames
 
-	return validation_generator, test_files_names
+		return validation_generator, test_files_names
+	except Exception as e:
+		print("getTestData failed with exception: ", e)
+		print("Terminating now, Sorry.")
+		exit()
 
 
 def getTestGen(path, image_size, color, mode):
-	test_datagen = ImageDataGenerator(rescale = 1./255)
+	try:
+		test_datagen = ImageDataGenerator(rescale = 1./255)
 
-	# generator for reading test data from folder
-	test_generator = test_datagen.flow_from_directory(
-		path+'/test',
-		target_size = (image_size, image_size),
-		color_mode = color,
-		batch_size = 1,
-		class_mode = mode,
-		shuffle = False)
+		# generator for reading test data from folder
+		test_generator = test_datagen.flow_from_directory(
+			path+'/test',
+			target_size = (image_size, image_size),
+			color_mode = color,
+			batch_size = 1,
+			class_mode = mode,
+			shuffle = False)
 
-	test_files_names = test_generator.filenames
+		test_files_names = test_generator.filenames
 
-	return test_generator, test_files_names
+		return test_generator, test_files_names
+	except Exception as e:
+		print("getTestGen failed with exception: ", e)
+		print("Terminating now, Sorry.")
+		exit()
 
 ## getModelOne
 ##
@@ -114,15 +129,20 @@ def getTestGen(path, image_size, color, mode):
 ## 		model: The model to use for the nureal network
 ##
 def getModelOne(image_size):
-	model = Sequential()
-	#this line is needed, For some reason the way the data is formated this must be this way
-	model.add(Conv2D(32, (3,3), input_shape = (image_size, image_size, 3), activation = 'relu'))
-	model.add(Flatten())
+	try:
+		model = Sequential()
+		#this line is needed, For some reason the way the data is formated this must be this way
+		model.add(Conv2D(32, (3,3), input_shape = (image_size, image_size, 3), activation = 'relu'))
+		model.add(Flatten())
 
-	#must be last or else does not work
-	model.add(Dense(1, activation = 'sigmoid'))
-	
-	return model
+		#must be last or else does not work
+		model.add(Dense(1, activation = 'sigmoid'))
+		
+		return model
+	except Exception as e:
+		print("getModelOne failed with exception: ", e)
+		print("Terminating now, Sorry.")
+		exit()
 
 ## getModelTwo
 ##
@@ -136,28 +156,33 @@ def getModelOne(image_size):
 ## 		model: The model to use for the nureal network
 ##
 def getModelTwo(image_size):
-	model = Sequential()
-	#this line is needed, For some reason the way the data is formated this must be this way
-	model.add(Conv2D(32, (3,3), input_shape = (image_size, image_size, 3), activation = 'relu'))
-	model.add(MaxPooling2D(pool_size = (2,2)))	
+	try:
+		model = Sequential()
+		#this line is needed, For some reason the way the data is formated this must be this way
+		model.add(Conv2D(32, (3,3), input_shape = (image_size, image_size, 3), activation = 'relu'))
+		model.add(MaxPooling2D(pool_size = (2,2)))	
 
-	model.add(Conv2D(32, (3,3), activation = 'relu'))
-	model.add(MaxPooling2D(pool_size = (2,2)))	
-	model.add(Dropout(0.2))
+		model.add(Conv2D(32, (3,3), activation = 'relu'))
+		model.add(MaxPooling2D(pool_size = (2,2)))	
+		model.add(Dropout(0.2))
 
-	model.add(Conv2D(64, (3,3), activation = 'relu'))
-	model.add(MaxPooling2D(pool_size = (2,2)))	
+		model.add(Conv2D(64, (3,3), activation = 'relu'))
+		model.add(MaxPooling2D(pool_size = (2,2)))	
 
-	#this line is needed, without it the model does not work
-	model.add(Flatten())
-	model.add(Dropout(0.2))
-	model.add(Dense(2, activation = 'softmax'))
-	model.add(Dense(128, activation = 'relu'))
-	model.add(Dropout(0.2))
-	#must be last or else does not work
-	model.add(Dense(1, activation = 'sigmoid'))
+		#this line is needed, without it the model does not work
+		model.add(Flatten())
+		model.add(Dropout(0.2))
+		model.add(Dense(2, activation = 'softmax'))
+		model.add(Dense(128, activation = 'relu'))
+		model.add(Dropout(0.2))
+		#must be last or else does not work
+		model.add(Dense(1, activation = 'sigmoid'))
 
-	return model
+		return model
+	except Exception as e:
+		print("getModelTwo failed with exception: ", e)
+		print("Terminating now, Sorry.")
+		exit()
 
 ## getModelThree
 ##
@@ -171,21 +196,26 @@ def getModelTwo(image_size):
 ## 		model: The model to use for the nureal network
 ##
 def getModelThree(image_size):
-	model = Sequential()
-	#this line is needed, For some reason the way the data is formated this must be this way
-	model.add(Conv2D(32, (3,3), input_shape = (image_size, image_size, 3), activation = 'relu'))
-	model.add(MaxPooling2D(pool_size = (4,4)))
-	
-	model.add(Dense(36, activation = 'relu'))
-	model.add(Dropout(0.2))
-	model.add(Dense(300))
-	#this line is needed, without it the model does not work
-	model.add(Flatten())
-	model.add(Dense(128, activation = 'relu'))
-	model.add(Dropout(0.5))
-	#must be last or else does not work
-	model.add(Dense(1, activation = 'sigmoid'))
-	return model
+	try:
+		model = Sequential()
+		#this line is needed, For some reason the way the data is formated this must be this way
+		model.add(Conv2D(32, (3,3), input_shape = (image_size, image_size, 3), activation = 'relu'))
+		model.add(MaxPooling2D(pool_size = (4,4)))
+		
+		model.add(Dense(36, activation = 'relu'))
+		model.add(Dropout(0.2))
+		model.add(Dense(300))
+		#this line is needed, without it the model does not work
+		model.add(Flatten())
+		model.add(Dense(128, activation = 'relu'))
+		model.add(Dropout(0.5))
+		#must be last or else does not work
+		model.add(Dense(1, activation = 'sigmoid'))
+		return model
+	except Exception as e:
+		print("getModelThree failed with exception: ", e)
+		print("Terminating now, Sorry.")
+		exit()
 
 ## compile
 ##
@@ -200,10 +230,15 @@ def getModelThree(image_size):
 ## 		model: The model to use for the nureal network
 ##
 def compile(model, optimizer):
-	model.compile(loss = 'binary_crossentropy',
-				optimizer = optimizer,
-				metrics = ['accuracy'])
-	return model
+	try:
+		model.compile(loss = 'binary_crossentropy',
+					optimizer = optimizer,
+					metrics = ['accuracy'])
+		return model
+	except Exception as e:
+		print("compile failed with exception: ", e)
+		print("Terminating now, Sorry.")
+		exit()
 
 ## fit
 ##
@@ -220,10 +255,14 @@ def compile(model, optimizer):
 ## 		model: The model after it has been trained
 ##
 def fit(model, train_images, train_labels, epoch_num):
+	try:
+		model.fit(train_images, train_labels, epochs=epoch_num, batch_size=1)
 
-	model.fit(train_images, train_labels, epochs=epoch_num, batch_size=1)
-
-	return model
+		return model
+	except Exception as e:
+		print("fit failed with exception: ", e)
+		print("Terminating now, Sorry.")
+		exit()
 
 ## getTestSet
 ##
@@ -238,9 +277,14 @@ def fit(model, train_images, train_labels, epoch_num):
 ##		test_labels: 	The labels for the test data
 ##
 def getTestSet(dataGen):
-	print("getting next batch of data....")
-	test_samples, test_labels = next(dataGen)
-	return test_samples, test_labels
+	try:
+		print("getting next batch of data....")
+		test_samples, test_labels = next(dataGen)
+		return test_samples, test_labels
+	except Exception as e:
+		print("getTestSet failed with exception: ", e)
+		print("Terminating now, Sorry.")
+		exit()
 
 ## evalModel
 ##
@@ -257,9 +301,14 @@ def getTestSet(dataGen):
 ##		accuracy: 	The accuracy of the model
 ##
 def evalModel(model, test_samples, test_labels):
-	loss, accuracy = model.evaluate(test_samples, test_labels)
+	try:
+		loss, accuracy = model.evaluate(test_samples, test_labels)
 
-	return loss, accuracy
+		return loss, accuracy
+	except Exception as e:
+		print("evalModel failed with exception: ", e)
+		print("Terminating now, Sorry.")
+		exit()
 
 ## debugTestImage
 ##
@@ -276,12 +325,17 @@ def evalModel(model, test_samples, test_labels):
 ##		accuracy: 	The accuracy of the model
 ##
 def debugTestImage(index, test_images, test_labels):
-	print(test_labels[index])
-	plt.figure()
-	plt.imshow(test_images[index])
-	plt.grid(False)
-	plt.xlabel(test_labels[index])
-	plt.show(test_labels[index])
+	try:
+		print(test_labels[index])
+		plt.figure()
+		plt.imshow(test_images[index])
+		plt.grid(False)
+		plt.xlabel(test_labels[index])
+		plt.show(test_labels[index])
+	except Exception as e:
+		print("debugTestImage failed with exception: ", e)
+		print("Terminating now, Sorry.")
+		exit()
 
 ## getModelNumFromUser
 ##
@@ -295,13 +349,19 @@ def debugTestImage(index, test_images, test_labels):
 ## 		model_num:		The model to use
 ##
 def getModelNumFromUser():
-	while True:
-		model_num = input("What model do you want to use? (1, 2, 3, or exit)\n")
+	try:
+		while True:
+			model_num = input("What model do you want to use? (1, 2, 3, or exit)\n")
 
-		if (model_num == '1' or model_num == '2' or model_num == '3'):
-			return model_num
-		elif (model_num == 'exit'):
-			exit()
+			if (model_num == '1' or model_num == '2' or model_num == '3'):
+				return model_num
+			elif (model_num == 'exit'):
+				exit()
+	except Exception as e:
+		print("getModelNumFromUser failed with exception: ", e)
+		print("Terminating now, Sorry.")
+		exit()
+
 
 ## getEpoch
 ##
@@ -315,18 +375,23 @@ def getModelNumFromUser():
 ## 		epochs:		The number of epochs to use
 ##
 def getEpoch():
-	while True:
-		epochs_num = input("How many epochs? (keep in mind more epochs = longer time but greater accuracy)\nEnter exit to quit.\n")
+	try:
+		while True:
+			epochs_num = input("How many epochs? (keep in mind more epochs = longer time but greater accuracy)\nEnter exit to quit.\n")
 
-		if epochs_num != 'exit':
-			try:
-				epochs = int(epochs_num)
-				return epochs
+			if epochs_num != 'exit':
+				try:
+					epochs = int(epochs_num)
+					return epochs
 
-			except:
-				print("Not a valid input. Must be a number.")
-		else:
-			exit()
+				except:
+					print("Not a valid input. Must be a number.")
+			else:
+				exit()
+	except Exception as e:
+		print("getEpoch failed with exception: ", e)
+		print("Terminating now, Sorry.")
+		exit()
 
 ## getOptimizer
 ##
@@ -340,17 +405,22 @@ def getEpoch():
 ## 		opt:		The optimizer the user picked
 ##
 def getOptimizer():
-	while True:
-		opt = input("Choose one of these optmizers:\n1) RMSProp\n2) Adam\n3) Adagrad\nEnter exit to quit\n")
+	try:
+		while True:
+			opt = input("Choose one of these optmizers:\n1) RMSProp\n2) Adam\n3) Adagrad\nEnter exit to quit\n")
 
-		if opt == 'exit':
-			exit()
-		elif opt == '1':
-			return 'rmsprop'
-		elif opt == '2':
-			return 'adam'
-		elif opt == '3':
-			return 'adagrad'
+			if opt == 'exit':
+				exit()
+			elif opt == '1':
+				return 'rmsprop'
+			elif opt == '2':
+				return 'adam'
+			elif opt == '3':
+				return 'adagrad'
+	except Exception as e:
+		print("getOptimizer failed with exception: ", e)
+		print("Terminating now, Sorry.")
+		exit()
 
 
 ## printSummary
@@ -365,19 +435,12 @@ def getOptimizer():
 ## 		None
 ##
 def printSummary(model_num, opt, num_epoch):
-	print('Model Number chose: ', model_num)
-	print('Optmizer chosen: ', opt)
-	print('Number of epochs: ', num_epoch)
-
-def predict(model, test_data, num_samples):
-	perdictions = model.predict_generator(test_data, num_samples, verbose=1)
-
-	predictions_two = np.argmax(perdictions, axis=-1) #multiple categories
-	label_map = (test_data.class_indices)
-	label_map = dict((v,k) for k,v in label_map.items()) #flip k,v
-	predictions_three = [label_map[k] for k in predictions_two]
-	print(predictions_three)
-	
-	return perdictions
-
+	try:
+		print('Model Number chose: ', model_num)
+		print('Optmizer chosen: ', opt)
+		print('Number of epochs: ', num_epoch)
+	except Exception as e:
+		print("printSummary failed with exception: ", e)
+		print("Terminating now, Sorry.")
+		exit()
 

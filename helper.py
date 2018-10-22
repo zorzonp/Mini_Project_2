@@ -18,6 +18,7 @@ from keras.layers import Dropout, Flatten, Dense
 
 #imports a tool to plot/display figures and images
 import matplotlib.pyplot as plt
+import numpy as np
 
 ## getTrainData
 ##
@@ -80,7 +81,26 @@ def getTestData(path, image_size, color, batch, mode):
 		batch_size = batch,
 		class_mode = mode)
 
-	return validation_generator
+	test_files_names = validation_generator.filenames
+
+	return validation_generator, test_files_names
+
+
+def getTestGen(path, image_size, color, mode):
+	test_datagen = ImageDataGenerator(rescale = 1./255)
+
+	# generator for reading test data from folder
+	test_generator = test_datagen.flow_from_directory(
+		path+'/test',
+		target_size = (image_size, image_size),
+		color_mode = color,
+		batch_size = 1,
+		class_mode = mode,
+		shuffle = False)
+
+	test_files_names = test_generator.filenames
+
+	return test_generator, test_files_names
 
 ## getModelOne
 ##
@@ -119,12 +139,15 @@ def getModelTwo(image_size):
 	model = Sequential()
 	#this line is needed, For some reason the way the data is formated this must be this way
 	model.add(Conv2D(32, (3,3), input_shape = (image_size, image_size, 3), activation = 'relu'))
-	
+	model.add(MaxPooling2D(pool_size = (2,2)))	
+
 	model.add(Conv2D(32, (3,3), activation = 'relu'))
 	model.add(MaxPooling2D(pool_size = (2,2)))	
 	model.add(Dropout(0.2))
 
-	model.add(MaxPooling2D(pool_size = (2,2)))
+	model.add(Conv2D(64, (3,3), activation = 'relu'))
+	model.add(MaxPooling2D(pool_size = (2,2)))	
+
 	#this line is needed, without it the model does not work
 	model.add(Flatten())
 	model.add(Dropout(0.2))
@@ -152,8 +175,10 @@ def getModelThree(image_size):
 	#this line is needed, For some reason the way the data is formated this must be this way
 	model.add(Conv2D(32, (3,3), input_shape = (image_size, image_size, 3), activation = 'relu'))
 	model.add(MaxPooling2D(pool_size = (4,4)))
+	
 	model.add(Dense(36, activation = 'relu'))
 	model.add(Dropout(0.2))
+	model.add(Dense(300))
 	#this line is needed, without it the model does not work
 	model.add(Flatten())
 	model.add(Dense(128, activation = 'relu'))
@@ -187,21 +212,17 @@ def compile(model, optimizer):
 ##
 ## INPUTS:
 ## 		model:		The model to compile
-##		train_data:	The traning data
-##		test_data:	The testing data
+##		train_images:	The traning data images
+##		train_labels:	The traning data labels
 ##		epoch_num:	The number of epochs to run the training for
-##		val_steps:	Number of batches of samples to yield per epoch from the validation/test data
-##		steps:		Number of batches of samples to yield per epoch from training data
 ##
 ## OUTPUT:
 ## 		model: The model after it has been trained
 ##
-def fit(model, train_data, test_data, epoch_num, val_steps, steps):
-	model.fit_generator(train_data,
-					steps_per_epoch = steps,
-					epochs = epoch_num,
-					validation_data = test_data,
-					validation_steps = val_steps)
+def fit(model, train_images, train_labels, epoch_num):
+
+	model.fit(train_images, train_labels, epochs=epoch_num, batch_size=1)
+
 	return model
 
 ## getTestSet
@@ -217,6 +238,7 @@ def fit(model, train_data, test_data, epoch_num, val_steps, steps):
 ##		test_labels: 	The labels for the test data
 ##
 def getTestSet(dataGen):
+	print("getting next batch of data....")
 	test_samples, test_labels = next(dataGen)
 	return test_samples, test_labels
 
@@ -346,3 +368,16 @@ def printSummary(model_num, opt, num_epoch):
 	print('Model Number chose: ', model_num)
 	print('Optmizer chosen: ', opt)
 	print('Number of epochs: ', num_epoch)
+
+def predict(model, test_data, num_samples):
+	perdictions = model.predict_generator(test_data, num_samples, verbose=1)
+
+	predictions_two = np.argmax(perdictions, axis=-1) #multiple categories
+	label_map = (test_data.class_indices)
+	label_map = dict((v,k) for k,v in label_map.items()) #flip k,v
+	predictions_three = [label_map[k] for k in predictions_two]
+	print(predictions_three)
+	
+	return perdictions
+
+

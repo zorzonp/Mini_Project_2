@@ -41,7 +41,7 @@ I had issues running/installing these. I needed to install them multiple times, 
 
 ### Problems
 
-I have python 2.7, 3, 3.5, and 3.7 on my Mac. I had to install theses libraries multiple times. I also needed to reinstall Python.
+I have python 2.7, 3, 3.5, and 3.7 on my Mac. I had to install the libraries used in the project multiple times. SOme how they ended up uninstalling the Python framework from the operating system so I also needed to reinstall Python.
 In the end I needed to run using Miniconda3.
 
 I am not sure what you will have installed on your computer but you should test out these libraries before running. Start Python in the console/terminal by opening the terminal and typing python.

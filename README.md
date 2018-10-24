@@ -6,13 +6,21 @@ To build the project I utilized Keras API and Matplotlib.
 
 In order to use the Keras API to get the images into a format that can be evaluated by the model they must be in a data structure that looks like [3]:
 data/
+
 	test/
+	
 	valid/
+	
 		class_a/
+		
 		class_b/
+		
 	train/
+	
 		class_a/
+		
 		class_b/
+		
 
 The images I am using to train and test my model are the Dog Vs. Cat dataset from Kaggle [1]
 

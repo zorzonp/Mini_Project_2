@@ -102,39 +102,45 @@ predictions = model.predict_classes(test_set_images)
 print(predictions)
 print(test_set_labels)
 
-#get the first occurance of a CAT
-lbl_index = 0
-for label in test_set_labels:
-	if label == 1:
+try:
+	#get the first occurance of a CAT
+	lbl_index = 0
+	for label in test_set_labels:
+		if label == 1:
+			break
+		lbl_index = lbl_index + 1
+
+	#print the predicted class as text
+	tmp_index = int(predictions[lbl_index])
+	print("Class predict: ", classes[tmp_index])
+
+	#if the class predicted matched the label then print pass, else print fail
+	if(predictions[lbl_index] == test_set_labels[lbl_index]):
+		print("PASS!")
+	else:
+		print("FAIL comparison!!")
+except Exception as e:
+	print("There was no cat picture in the testing set.")
+
+try:
+	#get the first occurance of a DOG
+	lbl_index = 0
+	for label in test_set_labels:
+		if label == 0:
 		break
-	lbl_index = lbl_index + 1
+		lbl_index = lbl_index + 1
 
-#print the predicted class as text
-tmp_index = int(predictions[lbl_index])
-print("Class predict: ", classes[tmp_index])
+	#print the predicted class as text
+	tmp_index = int(predictions[lbl_index])
+	print("Class predict:", classes[tmp_index])
 
-#if the class predicted matched the label then print pass, else print fail
-if(predictions[lbl_index] == test_set_labels[lbl_index]):
-	print("PASS!")
-else:
-	print("FAIL comparison!!")
-
-#get the first occurance of a DOG
-lbl_index = 0
-for label in test_set_labels:
-	if label == 0:
-		break
-	lbl_index = lbl_index + 1
-
-#print the predicted class as text
-tmp_index = int(predictions[lbl_index])
-print("Class predict:", classes[tmp_index])
-
-#if the class predicted matched the label then print pass, else print fail
-if(predictions[lbl_index] == test_set_labels[lbl_index]):
-	print("PASS!")
-else:
-	print("FAIL comparison!!")
+	#if the class predicted matched the label then print pass, else print fail
+	if(predictions[lbl_index] == test_set_labels[lbl_index]):
+		print("PASS!")
+	else:
+		print("FAIL comparison!!")
+except Exception as e:
+	print("There was no dog picture in the testing set.")
 
 
 
